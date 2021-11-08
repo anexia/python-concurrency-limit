@@ -14,7 +14,7 @@ class RedisConfiguration:
     Redis connection configuration.
     """
     host: str = None
-    "The Hostname or IP of the Redis server."
+    "The hostname or IP of the Redis server."
 
     port: int = 6379
     "The Redis server port."

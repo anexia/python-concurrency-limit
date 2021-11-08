@@ -146,6 +146,101 @@ with concurrency_limit.limit(redis_configuration, limit_configuration):
     do_something_magic()
 ```
 
+## Configuration options
+
+### `RedisConfiguration`
+
+#### `host: str`
+
+Default: `None`
+
+The hostname or IP of the Redis server.
+
+#### `port: int`
+
+Default: `6379`
+
+The Redis server port.
+
+#### `db: int`
+
+Default: `0`
+
+The Redis database to use.
+
+#### `username: str`
+
+Default: `None`
+
+The authentication username.
+
+#### `password: str`
+
+Default: `None`
+
+The authentication password.
+
+#### `max_connections: int`
+
+Default: `10`
+
+The maximum connections on the connection pool for each process.
+
+#### `timeout: int`
+
+Default: `10`
+
+The Redis server connection timeout.
+
+#### `secure: bool`
+
+Default: `False`
+
+Use secure connection to Redis server.
+
+#### `connection_pool: redis.ConnectionPool`
+
+Default: `None`
+
+Use this connection pool instance instead of the other fields, if set. All other fields of the configuration
+instance is ignored in this case.
+
+### `LimitConfiguration`
+
+#### `key: str`
+
+The concurrency limit group identifier. Use the same key for different scopes that should use the same concurrency
+counter. You may use different limit configurations for scopes that use the same key.
+
+#### `limit: int`
+
+The concurrency limit for the limited concurrency group (defined by the `key`). If there are more concurrent executions
+than this limit allows, the execution may wait for the concurrency count to go below the limit, or may
+fail by raising a `ConcurrencyLimitExceededException` exception.
+
+#### `limit_timeout: int`
+
+Default: `10`
+
+The timeout that defines how long to wait for the concurrency count to go below the configured limit. The timeout
+is configured in seconds. Set to `0` if you want to raise a `ConcurrencyLimitExceededException` exception immediately 
+if there are too many concurrent executions.
+
+#### `limit_interval: float`
+
+Default: `0.1`
+
+If there are too many concurrent executions of a scope, and a `limit_timeout` is set to a value greater than `0`, this
+configuration defines the interval to re-check the current concurrency count. As soon as the concurrency count is 
+below the configured limit, the execution of the scope starts.
+
+#### `limit_expire: int`
+
+Default: `60`
+
+The expiry time of the concurrency count key, configured in seconds. If a concurrency count is untouched for the 
+configured time, it will be deleted.
+
 # List of developers
 
 * Andreas Stocker <AStocker@anexia-it.com>, Lead Developer
