@@ -15,13 +15,13 @@ execution threads.
 With a [correctly configured](https://pipenv.pypa.io/en/latest/basics/#basic-usage-of-pipenv) `pipenv` toolchain:
 
 ```sh
-pipenv install git+https://github.com/anexia-it/python-concurrency-limit.git@main
+pipenv install concurrency-limit
 ```
 
 You may also use classic `pip` to install the package:
 
 ```sh
-pip install git+https://github.com/anexia-it/python-concurrency-limit.git@main
+pip install concurrency-limit
 ```
 
 # Getting started
