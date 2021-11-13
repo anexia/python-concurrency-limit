@@ -6,11 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2021-11-13
+### Fixed
+- Fixed package name in README.md
+
 ## [1.0.0] - 2021-11-11
 ### Added
 - Concurrency limit context-manager
 - Support for creating and managing Redis connections
 - Support for using existing Redis connection pools
 
-[Unreleased]: https://github.com/anexia-it/python-concurrency-limit/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/anexia-it/python-concurrency-limit/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/anexia-it/python-concurrency-limit/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/anexia-it/python-concurrency-limit/releases/tag/1.0.0

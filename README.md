@@ -1,11 +1,11 @@
-python-concurrency-limit
-========================
+concurrency-limit
+=================
 
 [![PyPI](https://badge.fury.io/py/concurrency-limit.svg)](https://pypi.org/project/concurrency-limit/)
 [![Test Status](https://github.com/anexia-it/python-concurrency-limit/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/anexia-it/python-concurrency-limit/actions/workflows/test.yml)
 [![Codecov](https://codecov.io/gh/anexia-it/python-concurrency-limit/branch/main/graph/badge.svg)](https://codecov.io/gh/anexia-it/python-concurrency-limit)
 
-`python-concurrency-limit` is a library that implements a distributed concurrency limiting mechanism using Redis as a
+`concurrency-limit` is a library that implements a distributed concurrency limiting mechanism using Redis as a
 backend. The library allows to limit the number of concurrent executions of code sections, either by waiting until
 the currently running execution threads go below the limit, or by raising an exception if there are currently too many
 execution threads.
