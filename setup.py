@@ -17,7 +17,7 @@ setup(
     description='A library that implements a distributed concurrency limiting mechanism using Redis as a backend.',
     long_description=readme,
     long_description_content_type='text/markdown',
-    url='https://github.com/anexia-it/python-concurrency-limit',
+    url='https://github.com/anexia/python-concurrency-limit',
     author='Andreas Stocker',
     author_email='AStocker@anexia-it.com',
     install_requires=[
