@@ -43,12 +43,13 @@ def _get_redis_by_credentials(configuration: RedisConfiguration) -> redis.Redis:
             _connection_pool_map[configuration] = redis.BlockingConnectionPool(
                 host=configuration.host,
                 port=configuration.port,
+                path=configuration.path,
                 db=configuration.db,
                 username=configuration.username,
                 password=configuration.password,
                 max_connections=configuration.max_connections,
                 timeout=configuration.timeout,
-                connection_class=redis.SSLConnection if configuration.secure else redis.Connection,
+                connection_class=configuration.get_connection_class(),
             )
 
         return redis.Redis(connection_pool=_connection_pool_map[configuration])

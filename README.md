@@ -149,6 +149,24 @@ with concurrency_limit.limit(redis_configuration, limit_configuration):
     do_something_magic()
 ```
 
+### Example 6
+
+Limit the concurrency group `"example-6"` to `100` concurrently running scopes. A redis URL will be used instead of
+separately specifying host and port for the redis connection.
+
+```python
+import concurrency_limit
+
+redis_configuration = concurrency_limit.RedisConfiguration.from_url('redis://127.0.0.1:6379/0')
+limit_configuration = concurrency_limit.LimitConfiguration(
+    key='example-6',
+    limit=100,
+)
+
+with concurrency_limit.limit(redis_configuration, limit_configuration):
+    do_something_magic()
+```
+
 ## Configuration options
 
 ### `RedisConfiguration`
@@ -164,6 +182,12 @@ The hostname or IP of the Redis server.
 Default: `6379`
 
 The Redis server port.
+
+#### `path: str`
+
+Default: `None`
+
+The socket path used if `unix_socket` is set.
 
 #### `db: int`
 
@@ -201,12 +225,24 @@ Default: `False`
 
 Use secure connection to Redis server.
 
+#### `unix_socket: bool`
+
+Default: `False`
+
+Use UNIX socket connection to Redis server. Will ignore `secure`, if set as there is no SSL mode with sockets.
+
+#### `connection_class: typing.Type[redis.Connection]`
+
+Default: `None`
+
+Redis connection class to use instead of `secure` and `unix_socket` fields, if set.
+
 #### `connection_pool: redis.ConnectionPool`
 
 Default: `None`
 
 Use this connection pool instance instead of the other fields, if set. All other fields of the configuration
-instance is ignored in this case.
+instance are ignored in this case.
 
 ### `LimitConfiguration`
 

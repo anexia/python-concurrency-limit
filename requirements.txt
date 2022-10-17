@@ -4,7 +4,7 @@
 # Development dependencies
 pytest>=6.2,<6.3
 pytest-mock>=3.6,<3.7
-flake8>=3.9,<3.10
+flake8>=5.0.0,<5.1.0
 codecov>=2.1,<2.2
 setuptools>=42
 wheel>=0.37
