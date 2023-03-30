@@ -1,4 +1,6 @@
 import dataclasses
+import typing
+
 import redis
 
 
@@ -19,6 +21,9 @@ class RedisConfiguration:
     port: int = 6379
     "The Redis server port."
 
+    path: str = None
+    "The socket path used if `unix_socket` is set."
+
     db: int = 0
     "The Redis database to use."
 
@@ -37,8 +42,61 @@ class RedisConfiguration:
     secure: bool = False
     "Use secure connection to Redis server."
 
+    unix_socket: bool = False
+    "Use UNIX socket connection to Redis server. Will ignore `secure`, if set."
+
+    connection_class: typing.Type[redis.Connection] = None
+    "Redis connection class to use instead of `secure` and `unix_socket` fields, if set."
+
     connection_pool: redis.ConnectionPool = None
     "Use this connection pool instance instead of the other fields, if set."
+
+    def get_connection_class(self) -> typing.Type[redis.Connection]:
+        """
+        Returns the `redis.Connection` class to use based on this configuration.
+
+        Priority of configuration values:
+
+        1. `connection_class` if set
+        2. `redis.UnixDomainSocketConnection` if `unix_socket` is set
+        3. `redis.SSLConnection` if `secure` is set
+        4. `redis.Connection` as last resort
+
+        :return: Determined `redis.Connection` class
+        """
+        if self.connection_class is not None:
+            return self.connection_class
+
+        if self.unix_socket:
+            return redis.UnixDomainSocketConnection
+
+        if self.secure:
+            return redis.SSLConnection
+
+        return redis.Connection
+
+    @classmethod
+    def from_url(cls, url, **kwargs):
+        """
+        Returns a `RedisConfiguration` object based on the given URL. This behaves exactly the same as the `from_url`
+        methods of the `redis-py` package.
+
+        Examples:
+
+        - redis://[[username]:[password]]@localhost:6379/0
+        - rediss://[[username]:[password]]@localhost:6379/0
+        - unix://[[username]:[password]]@/path/to/socket.sock?db=0
+
+        :param url: Redis URL to generate a `RedisConfiguration` from
+        :param kwargs: Additional arguments to set for the configuration object
+        """
+        url_options = redis.connection.parse_url(url)
+
+        if 'connection_class' in kwargs:
+            url_options['connection_class'] = kwargs['connection_class']
+
+        kwargs.update(url_options)
+        return cls(**kwargs)
 
 
 @dataclasses.dataclass(eq=True, frozen=True)
