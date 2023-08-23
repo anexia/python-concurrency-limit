@@ -3,11 +3,7 @@ import typing
 
 import redis
 
-
-__all__ = [
-    'RedisConfiguration',
-    'LimitConfiguration',
-]
+__all__ = ["RedisConfiguration", "LimitConfiguration"]
 
 
 @dataclasses.dataclass(eq=True, frozen=True)
@@ -15,6 +11,7 @@ class RedisConfiguration:
     """
     Redis connection configuration.
     """
+
     host: str = None
     "The hostname or IP of the Redis server."
 
@@ -92,8 +89,8 @@ class RedisConfiguration:
         """
         url_options = redis.connection.parse_url(url)
 
-        if 'connection_class' in kwargs:
-            url_options['connection_class'] = kwargs['connection_class']
+        if "connection_class" in kwargs:
+            url_options["connection_class"] = kwargs["connection_class"]
 
         kwargs.update(url_options)
         return cls(**kwargs)
@@ -104,6 +101,7 @@ class LimitConfiguration:
     """
     Concurrency limit configuration.
     """
+
     key: str
     "The concurrency limit group identifier."
 

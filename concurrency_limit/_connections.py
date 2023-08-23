@@ -1,17 +1,17 @@
+import functools
 import threading
+
 import redis
 
 from .configuration import *
 
-
-__all__ = [
-    'get_redis',
-]
+__all__ = ["get_redis"]
 
 _connection_pool_map = {}
 _connection_pool_lock = threading.Lock()
 
 
+@functools.cache
 def get_redis(configuration: RedisConfiguration) -> redis.Redis:
     """
     Gets the Redis client used to store the concurrency keys.
