@@ -284,11 +284,11 @@ configured time, it will be deleted.
 
 |             | Supported |
 |-------------|-----------|
-| Python 3.7  | ✓         |
-| Python 3.8  | ✓         |
 | Python 3.9  | ✓         |
 | Python 3.10 | ✓         |
+| Python 3.11 | ✓         |
 
 # List of developers
 
-* Andreas Stocker <AStocker@anexia-it.com>, Lead Developer
+* Andreas Stocker <AStocker@anexia.com>, Lead Developer
+* Patrick Taibel <PTaibel@anexia.com>, Developer

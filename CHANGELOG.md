@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for UNIX socket redis connections
 - Generating redis configurations from a given URL
 
+### Changed
+- Minimum required version of `redis-py` is now `4.0`
+
+### Removed
+- Removed support for Python 3.7 and Python 3.8
+
+### Fixed
+- Individual concurrency locks expire despite connection errors
+
 ## [1.0.3] - 2022-01-19
 ### Changed
 - Updated badges
