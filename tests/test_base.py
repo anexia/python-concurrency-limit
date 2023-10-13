@@ -6,24 +6,38 @@ import time
 
 __all__ = ["RedisMock", "concurrent"]
 
+import redis.exceptions
+
 
 class RedisMock:
     def __init__(self):
         self._lock = threading.Lock()
+        self._keys = collections.defaultdict(lambda: None)
         self._hashes = collections.defaultdict(lambda: {})
         self._expires = collections.defaultdict(lambda: time.time() + 2 ** 32)
 
     def scan_iter(self, match):
-        for key in fnmatch.filter(self._hashes.keys(), match):
+        keys = {*self._keys.keys(), *self._hashes.keys()}
+        for key in fnmatch.filter(keys, match):
             yield key
+
+    def set(self, name, value):
+        with self._lock:
+            self._keys[name] = value
+
+    def delete(self, name):
+        with self._lock:
+            del self._keys[name]
 
     def hlen(self, name):
         with self._lock:
+            self._ensure_type_hash(name)
             self._clean_expired(name)
             return len(self._hashes[name])
 
     def hset(self, name, key, value):
         with self._lock:
+            self._ensure_type_hash(name)
             self._hashes[name][key] = str(value)
 
     def hdel(self, name, *keys):
@@ -32,6 +46,7 @@ class RedisMock:
         with self._lock:
             for key in keys:
                 try:
+                    self._ensure_type_hash(name)
                     del self._hashes[name][key]
                     count += 1
                 except KeyError:
@@ -41,6 +56,7 @@ class RedisMock:
 
     def hscan_iter(self, name):
         with self._lock:
+            self._ensure_type_hash(name)
             self._clean_expired(name)
             _hash = dict(self._hashes[name])
 
@@ -74,6 +90,12 @@ class RedisMock:
                     self.buffer = []
 
         return _Pipeline()
+
+    def _ensure_type_hash(self, name):
+        if name in self._keys:
+            raise redis.ResponseError(
+                "WRONGTYPE Operation against a key holding the wrong kind of value"
+            )
 
     def _clean_expired(self, name):
         if time.time() > self._expires[name]:

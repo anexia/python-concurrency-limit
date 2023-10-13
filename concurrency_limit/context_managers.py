@@ -2,11 +2,13 @@ import contextlib
 import time
 import uuid
 
+import redis
+
 from ._connections import *
 from .configuration import *
 from .exceptions import *
 
-__all__ = ["limit", "limit_clean", "limit_iter"]
+__all__ = ["limit"]
 
 
 @contextlib.contextmanager
@@ -59,10 +61,19 @@ def limit(
         while True:
             try:
                 # First we check if we should try to acquire an execution slot. If the limit is already exceeded,
-                # there is no need to set the lock-key.
-                count = client.hlen(lock_key)
-                if count >= lock_limit:
-                    raise _LockAcquireException()
+                # there is no need to set the lock-key. If the key does not contain a hash, Redis fails with a
+                # WRONGTYPE exception that we handle by deleting the key and re-trying.
+                try:
+                    count = client.hlen(lock_key)
+                    if count >= lock_limit:
+                        raise _LockAcquireException()
+
+                except redis.ResponseError as exc:
+                    if str(exc).startswith("WRONGTYPE"):
+                        client.delete(lock_key)
+                        continue
+
+                    raise  # pragma: no cover
 
                 # We have the chance to acquire a slot, so we set current id on the lock-key. After doing so, we
                 # re-check the number of acquired slots, and are re-trying if we now exceeded the limit.
@@ -98,43 +109,3 @@ def limit(
 
     finally:
         client.hdel(lock_key, lock_id)
-
-
-def limit_clean(
-    redis_configuration: RedisConfiguration, limit_configuration: LimitConfiguration
-):
-    """
-    Cleans stale limit locks in the hash for the given limit configuration.
-
-    :param redis_configuration: RedisConfiguration object containing the configuration details for connecting to Redis.
-    :param limit_configuration: LimitConfiguration object containing the configuration details for the limit.
-    :return: Number of cleaned items
-    """
-    client = get_redis(redis_configuration)
-    current = int(time.time())
-    count = 0
-
-    lock_key = limit_configuration.key
-
-    for scan_lock_id, scan_lock_expire in client.hscan_iter(lock_key):
-        try:
-            clean_lock = current >= int(scan_lock_expire)
-        except (ValueError, TypeError):
-            clean_lock = True
-
-        if clean_lock:
-            count += client.hdel(lock_key, scan_lock_id)
-
-    return count
-
-
-def limit_iter(redis_configuration: RedisConfiguration, key_pattern: str):
-    """
-    Return an iterator over the items in Redis specified by `key_pattern`
-    using the Redis connection specified by `redis_configuration`.
-
-    :param redis_configuration: The configuration for connecting to Redis.
-    :param key_pattern: The pattern for Redis to iterate over.
-    :return: Scan Iterator
-    """
-    return get_redis(redis_configuration).scan_iter(key_pattern)
