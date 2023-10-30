@@ -68,6 +68,34 @@ def test_configuration_from_url(url: str, config: RedisConfiguration):
 
 
 @pytest.mark.parametrize(
+    "url,kwargs,config",
+    [
+        (
+            "redis://127.0.0.1:6379/1",
+            {"connection_class": redis.SSLConnection},
+            RedisConfiguration(
+                host="127.0.0.1", port=6379, db=1, connection_class=redis.SSLConnection
+            ),
+        ),
+        (
+            "redis://127.0.0.1:6379/1",
+            {"connection_class": redis.UnixDomainSocketConnection},
+            RedisConfiguration(
+                host="127.0.0.1",
+                port=6379,
+                db=1,
+                connection_class=redis.UnixDomainSocketConnection,
+            ),
+        ),
+    ],
+)
+def test_configuration_from_url_with_kwargs(
+    url: str, kwargs: dict, config: RedisConfiguration
+):
+    assert RedisConfiguration.from_url(url, **kwargs) == config
+
+
+@pytest.mark.parametrize(
     "config,expected_class",
     [
         (RedisConfiguration(), redis.Connection),

@@ -184,9 +184,22 @@ def test_limit_with_high_load(mocker: pytest_mock.MockerFixture):
         _concurrent_function()
 
 
-def test_limit_clean(mocker: pytest_mock.MockerFixture):
+def test_limit_wrong_type(mocker: pytest_mock.MockerFixture):
     client = RedisMock()
     mocker.patch("concurrency_limit.context_managers.get_redis", return_value=client)
+
+    client.set("key-1", int(time.time()) + 10)
+
+    with concurrency_limit.limit(
+        concurrency_limit.RedisConfiguration(),
+        concurrency_limit.LimitConfiguration(key="key-1", limit=1, limit_timeout=5),
+    ):
+        time.sleep(1)
+
+
+def test_limit_clean(mocker: pytest_mock.MockerFixture):
+    client = RedisMock()
+    mocker.patch("concurrency_limit.utils.get_redis", return_value=client)
 
     client.hset("key-1", "expired-1", int(time.time()) - 10)
     client.hset("key-1", "expired-2", int(time.time()) - 10)
@@ -194,12 +207,58 @@ def test_limit_clean(mocker: pytest_mock.MockerFixture):
     client.hset("key-1", "unexpired-2", int(time.time()) + 10)
 
     assert client.hlen("key-1") == 4
-    assert concurrency_limit.limit_clean(
-        concurrency_limit.RedisConfiguration(),
-        concurrency_limit.LimitConfiguration(key="key-1", limit=1),
-    ) == 2
+    assert (
+        concurrency_limit.limit_clean(
+            concurrency_limit.RedisConfiguration(),
+            concurrency_limit.LimitConfiguration(key="key-1", limit=1),
+        )
+        == 2
+    )
     assert client.hlen("key-1") == 2
 
-    for scan_key in concurrency_limit.limit_iter(concurrency_limit.RedisConfiguration(), "key-*"):
+    for scan_key in concurrency_limit.limit_iter(
+        concurrency_limit.RedisConfiguration(), "key-*"
+    ):
         for scan_lock_id, _ in client.hscan_iter(scan_key):
             assert scan_lock_id.startswith("unexpired-")
+
+
+def test_limit_clean_expire_wrong_type(mocker: pytest_mock.MockerFixture):
+    client = RedisMock()
+    mocker.patch("concurrency_limit.utils.get_redis", return_value=client)
+
+    client.hset("key-1", "valid-1", int(time.time()) + 10)
+    client.hset("key-1", "valid-2", int(time.time()) + 10)
+    client.hset("key-1", "invalid-1", "abc")
+    client.hset("key-1", "invalid-2", "def")
+
+    assert client.hlen("key-1") == 4
+    assert (
+        concurrency_limit.limit_clean(
+            concurrency_limit.RedisConfiguration(),
+            concurrency_limit.LimitConfiguration(key="key-1", limit=1),
+        )
+        == 2
+    )
+    assert client.hlen("key-1") == 2
+
+    for scan_key in concurrency_limit.limit_iter(
+        concurrency_limit.RedisConfiguration(), "key-*"
+    ):
+        for scan_lock_id, _ in client.hscan_iter(scan_key):
+            assert scan_lock_id.startswith("valid-")
+
+
+def test_limit_clean_wrong_type(mocker: pytest_mock.MockerFixture):
+    client = RedisMock()
+    mocker.patch("concurrency_limit.utils.get_redis", return_value=client)
+
+    client.set("key-1", int(time.time()) + 10)
+
+    assert (
+        concurrency_limit.limit_clean(
+            concurrency_limit.RedisConfiguration(),
+            concurrency_limit.LimitConfiguration(key="key-1", limit=1),
+        )
+        == 1
+    )
