@@ -5,7 +5,7 @@ import pytest_mock
 
 import concurrency_limit
 
-from test_base import *
+from tests.test_base import *
 
 
 def test_limit_without_concurrency(mocker: pytest_mock.MockerFixture):

@@ -1,0 +1,8 @@
+[run]
+# _connections.py only builds real Redis clients / connection pools; the test
+# suite mocks `get_redis` instead of talking to a live server, so measuring it
+# would report permanently uncovered lines. The pre-pyproject CI passed this as
+# `coverage run --omit=...`; the rendered workflow has no such flag, so it lives
+# here now.
+omit =
+    concurrency_limit/_connections.py

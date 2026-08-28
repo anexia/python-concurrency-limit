@@ -1,0 +1,13 @@
+# Project-owned ruff settings, layered on top of the template-managed
+# [tool.ruff] section in pyproject.toml (which is overwritten on every copier
+# apply, so project-specific rules cannot live there).
+#
+# This package re-exports its public API with `from .module import *` in every
+# submodule, not just in __init__.py: each module declares __all__, so the
+# surface is explicit even though ruff cannot resolve it across modules. The
+# template only ignores F403/F405 for the package __init__.
+extend = "pyproject.toml"
+
+[lint.extend-per-file-ignores]
+"concurrency_limit/*.py" = ["F403", "F405"]
+"tests/test_limit.py" = ["F403", "F405"]
