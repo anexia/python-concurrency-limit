@@ -9,7 +9,8 @@ __all__ = ["limit_clean", "limit_iter"]
 
 
 def limit_clean(
-    redis_configuration: RedisConfiguration, limit_configuration: LimitConfiguration
+    redis_configuration: RedisConfiguration,
+    limit_configuration: LimitConfiguration,
 ):
     """
     Cleans stale limit locks in the hash for the given limit configuration.

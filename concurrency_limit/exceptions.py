@@ -10,7 +10,7 @@ class ConcurrencyLimitException(Exception):
 
     def __init__(self, *args, **kwargs):
         super().__init__(
-            self._msg_template.format(*args, **kwargs) if self._msg_template else None
+            self._msg_template.format(*args, **kwargs) if self._msg_template else None,
         )
 
 

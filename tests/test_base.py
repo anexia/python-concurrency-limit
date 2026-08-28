@@ -18,8 +18,7 @@ class RedisMock:
 
     def scan_iter(self, match):
         keys = {*self._keys.keys(), *self._hashes.keys()}
-        for key in fnmatch.filter(keys, match):
-            yield key
+        yield from fnmatch.filter(keys, match)
 
     def set(self, name, value):
         with self._lock:
@@ -60,8 +59,7 @@ class RedisMock:
             self._clean_expired(name)
             _hash = dict(self._hashes[name])
 
-        for hkey, hvalue in _hash.items():
-            yield hkey, hvalue
+        yield from _hash.items()
 
     def expire(self, name, _time):
         with self._lock:
@@ -94,7 +92,7 @@ class RedisMock:
     def _ensure_type_hash(self, name):
         if name in self._keys:
             raise redis.ResponseError(
-                "WRONGTYPE Operation against a key holding the wrong kind of value"
+                "WRONGTYPE Operation against a key holding the wrong kind of value",
             )
 
     def _clean_expired(self, name):

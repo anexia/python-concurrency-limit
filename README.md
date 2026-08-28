@@ -27,13 +27,13 @@ pip install concurrency-limit
 # Getting started
 
 ## How it works
-- A limit of concurrently running scopes of a concurrency group can be defined using the `limit` decorator. A 
+- A limit of concurrently running scopes of a concurrency group can be defined using the `limit` decorator. A
   concurrency group is defined by the `key` attribute of the `LimitConfiguration` instance.
-- If the count of concurrently running scopes of a concurrency group is below the configured limit, the scope is 
+- If the count of concurrently running scopes of a concurrency group is below the configured limit, the scope is
   executed immediately.
-- If the count of concurrently running scopes of a concurrency group exceeds the configured limit, the context manager 
+- If the count of concurrently running scopes of a concurrency group exceeds the configured limit, the context manager
   wait unit it goes below the configured limit.
-- If the count of concurrently running scopes of a concurrency group does not go below the configured limit with the 
+- If the count of concurrently running scopes of a concurrency group does not go below the configured limit with the
   configured timeout, a `ConcurrencyLimitExceededException` exception is raised.
 
 ## Usage
@@ -41,7 +41,7 @@ pip install concurrency-limit
 ### Example 1
 
 Limit the concurrency group `"example-1"` to `100` concurrently running scopes. If there are already `100` running
-scopes, wait until the count of concurrently running scopes go below `100`. Fail if this does not happen within `10` 
+scopes, wait until the count of concurrently running scopes go below `100`. Fail if this does not happen within `10`
 seconds by raising a `ConcurrencyLimitExceededException` exception.
 
 ```python
@@ -64,8 +64,8 @@ with concurrency_limit.limit(redis_configuration, limit_configuration):
 ### Example 2
 
 Limit the concurrency group `"example-1"` to `100` concurrently running scopes. If there are already `100` running
-scopes, wait until the count of concurrently running scopes go below `100`. Fail if this does not happen within `10` 
-seconds by raising a `ConcurrencyLimitExceededException` exception. Check if the concurrently running scopes 
+scopes, wait until the count of concurrently running scopes go below `100`. Fail if this does not happen within `10`
+seconds by raising a `ConcurrencyLimitExceededException` exception. Check if the concurrently running scopes
 are below the limit every `1` second.
 
 ```python
@@ -110,7 +110,7 @@ with concurrency_limit.limit(redis_configuration, limit_configuration):
 
 ### Example 4
 
-Limit the concurrency group `"example-4"` to `100` concurrently running scopes. The implementation of the 
+Limit the concurrency group `"example-4"` to `100` concurrently running scopes. The implementation of the
 concurrency group needs to now the number of the concurrently running scope.
 
 ```python
@@ -262,7 +262,7 @@ fail by raising a `ConcurrencyLimitExceededException` exception.
 Default: `10`
 
 The timeout that defines how long to wait for the concurrency count to go below the configured limit. The timeout
-is configured in seconds. Set to `0` if you want to raise a `ConcurrencyLimitExceededException` exception immediately 
+is configured in seconds. Set to `0` if you want to raise a `ConcurrencyLimitExceededException` exception immediately
 if there are too many concurrent executions.
 
 #### `limit_interval: float`
@@ -270,14 +270,14 @@ if there are too many concurrent executions.
 Default: `0.1`
 
 If there are too many concurrent executions of a scope, and a `limit_timeout` is set to a value greater than `0`, this
-configuration defines the interval to re-check the current concurrency count. As soon as the concurrency count is 
+configuration defines the interval to re-check the current concurrency count. As soon as the concurrency count is
 below the configured limit, the execution of the scope starts.
 
 #### `limit_expire: int`
 
 Default: `60`
 
-The expiry time of the concurrency count key, configured in seconds. If a concurrency count is untouched for the 
+The expiry time of the concurrency count key, configured in seconds. If a concurrency count is untouched for the
 configured time, it will be deleted.
 
 # Supported versions
