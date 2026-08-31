@@ -13,7 +13,7 @@ class RedisMock:
     def __init__(self):
         self._lock = threading.Lock()
         self._keys = collections.defaultdict(lambda: None)
-        self._hashes = collections.defaultdict(lambda: {})
+        self._hashes = collections.defaultdict(dict)
         self._expires = collections.defaultdict(lambda: time.time() + 2**32)
 
     def scan_iter(self, match):
