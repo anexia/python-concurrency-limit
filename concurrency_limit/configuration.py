@@ -1,5 +1,4 @@
 import dataclasses
-import typing
 
 import redis
 import redis.connection
@@ -43,13 +42,13 @@ class RedisConfiguration:
     unix_socket: bool = False
     "Use UNIX socket connection to Redis server. Will ignore `secure`, if set."
 
-    connection_class: typing.Type[redis.connection.AbstractConnection] = None
+    connection_class: type[redis.connection.AbstractConnection] = None
     "Redis connection class to use instead of `secure` and `unix_socket` fields, if set."
 
     connection_pool: redis.ConnectionPool = None
     "Use this connection pool instance instead of the other fields, if set."
 
-    def get_connection_class(self) -> typing.Type[redis.connection.AbstractConnection]:
+    def get_connection_class(self) -> type[redis.connection.AbstractConnection]:
         """
         Returns the `redis.Connection` class to use based on this configuration.
 

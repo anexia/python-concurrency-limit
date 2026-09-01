@@ -1,5 +1,3 @@
-import typing
-
 import redis.connection
 
 import pytest
@@ -27,7 +25,10 @@ from concurrency_limit import RedisConfiguration
         (
             "rediss://127.0.0.1:6379/1",
             RedisConfiguration(
-                host="127.0.0.1", port=6379, db=1, connection_class=redis.SSLConnection
+                host="127.0.0.1",
+                port=6379,
+                db=1,
+                connection_class=redis.SSLConnection,
             ),
         ),
         (
@@ -74,7 +75,10 @@ def test_configuration_from_url(url: str, config: RedisConfiguration):
             "redis://127.0.0.1:6379/1",
             {"connection_class": redis.SSLConnection},
             RedisConfiguration(
-                host="127.0.0.1", port=6379, db=1, connection_class=redis.SSLConnection
+                host="127.0.0.1",
+                port=6379,
+                db=1,
+                connection_class=redis.SSLConnection,
             ),
         ),
         (
@@ -90,7 +94,9 @@ def test_configuration_from_url(url: str, config: RedisConfiguration):
     ],
 )
 def test_configuration_from_url_with_kwargs(
-    url: str, kwargs: dict, config: RedisConfiguration
+    url: str,
+    kwargs: dict,
+    config: RedisConfiguration,
 ):
     assert RedisConfiguration.from_url(url, **kwargs) == config
 
@@ -113,13 +119,16 @@ def test_configuration_from_url_with_kwargs(
         ),
         (
             RedisConfiguration(
-                secure=True, unix_socket=True, connection_class=redis.Connection
+                secure=True,
+                unix_socket=True,
+                connection_class=redis.Connection,
             ),
             redis.Connection,
         ),
     ],
 )
 def test_configuration_get_connection_class(
-    config: RedisConfiguration, expected_class: typing.Type[redis.Connection]
+    config: RedisConfiguration,
+    expected_class: type[redis.Connection],
 ):
     assert config.get_connection_class() == expected_class

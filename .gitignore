@@ -8,3 +8,6 @@ coverage.xml
 *.egg-info
 *.pyc
 *.pyo
+*.sqlite*
+build/
+dist/

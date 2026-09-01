@@ -1,6 +1,59 @@
 [build-system]
-requires = [
-    "setuptools>=58",
-    "wheel",
-]
+requires = ["setuptools>=75", "wheel", "setuptools_scm[toml]>=8"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "concurrency-limit"
+dynamic = ["version"]
+description = "A library that implements a distributed concurrency limiting mechanism using Redis as a backend."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "Anexia", email = "opensource@anexia-it.com"}]
+urls = {Homepage = "https://github.com/anexia/python-concurrency-limit"}
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+  "redis>=4.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "coverage>=7.13.2",
+  "pytest>=8",
+  "pytest-mock>=3.14",
+]
+dev = [
+  "pre-commit>=4.5,<4.6",
+]
+build = [
+  "build>=1.4.0",
+  "twine>=6.2.0",
+  "wheel>=0.46.3",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["concurrency_limit*"]
+
+[tool.setuptools_scm]
+
+[tool.ruff.lint.per-file-ignores]
+# Package __init__ files re-export the public API with `from .module import *`;
+# every submodule defines __all__, so the surface is explicit even though ruff
+# cannot resolve it across modules.
+"concurrency_limit/__init__.py" = ["F403", "F405"]

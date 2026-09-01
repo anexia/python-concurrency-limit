@@ -13,7 +13,8 @@ __all__ = ["limit"]
 
 @contextlib.contextmanager
 def limit(
-    redis_configuration: RedisConfiguration, limit_configuration: LimitConfiguration
+    redis_configuration: RedisConfiguration,
+    limit_configuration: LimitConfiguration,
 ):
     """
     The `limit` method is a context manager that allows for executing a scoped block of code under a concurrency limit.
@@ -100,7 +101,8 @@ def limit(
                 # exception. Executing the context manager's scope failed in this case.
                 if elapsed > lock_timeout:
                     raise ConcurrencyLimitExceededException(
-                        limit=lock_limit, timeout=lock_timeout
+                        limit=lock_limit,
+                        timeout=lock_timeout,
                     )
 
                 # We failed to acquire an execution slot for the context manager's scope, but we want to try again.

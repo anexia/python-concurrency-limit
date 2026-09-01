@@ -5,12 +5,13 @@ import pytest_mock
 
 import concurrency_limit
 
-from test_base import *
+from tests.test_base import *
 
 
 def test_limit_without_concurrency(mocker: pytest_mock.MockerFixture):
     mocker.patch(
-        "concurrency_limit.context_managers.get_redis", return_value=RedisMock()
+        "concurrency_limit.context_managers.get_redis",
+        return_value=RedisMock(),
     )
 
     with concurrency_limit.limit(
@@ -22,7 +23,8 @@ def test_limit_without_concurrency(mocker: pytest_mock.MockerFixture):
 
 def test_limit_slot_ids(mocker: pytest_mock.MockerFixture):
     mocker.patch(
-        "concurrency_limit.context_managers.get_redis", return_value=RedisMock()
+        "concurrency_limit.context_managers.get_redis",
+        return_value=RedisMock(),
     )
 
     slot_ids = []
@@ -32,7 +34,9 @@ def test_limit_slot_ids(mocker: pytest_mock.MockerFixture):
         with concurrency_limit.limit(
             concurrency_limit.RedisConfiguration(),
             concurrency_limit.LimitConfiguration(
-                key="key-1", limit=10, limit_timeout=0
+                key="key-1",
+                limit=10,
+                limit_timeout=0,
             ),
         ) as slot_id:
             slot_ids.append(slot_id)
@@ -46,7 +50,8 @@ def test_limit_slot_ids(mocker: pytest_mock.MockerFixture):
 
 def test_limit_within_limit(mocker: pytest_mock.MockerFixture):
     mocker.patch(
-        "concurrency_limit.context_managers.get_redis", return_value=RedisMock()
+        "concurrency_limit.context_managers.get_redis",
+        return_value=RedisMock(),
     )
 
     @concurrent(threads=1)
@@ -62,7 +67,8 @@ def test_limit_within_limit(mocker: pytest_mock.MockerFixture):
 
 def test_limit_exceeded_limit_without_timeout(mocker: pytest_mock.MockerFixture):
     mocker.patch(
-        "concurrency_limit.context_managers.get_redis", return_value=RedisMock()
+        "concurrency_limit.context_managers.get_redis",
+        return_value=RedisMock(),
     )
 
     @concurrent(threads=10)
@@ -79,7 +85,8 @@ def test_limit_exceeded_limit_without_timeout(mocker: pytest_mock.MockerFixture)
 
 def test_limit_exceeded_limit_within_timeout(mocker: pytest_mock.MockerFixture):
     mocker.patch(
-        "concurrency_limit.context_managers.get_redis", return_value=RedisMock()
+        "concurrency_limit.context_managers.get_redis",
+        return_value=RedisMock(),
     )
 
     @concurrent(threads=10)
@@ -95,7 +102,8 @@ def test_limit_exceeded_limit_within_timeout(mocker: pytest_mock.MockerFixture):
 
 def test_limit_exceeded_limit_exceeded_timeout(mocker: pytest_mock.MockerFixture):
     mocker.patch(
-        "concurrency_limit.context_managers.get_redis", return_value=RedisMock()
+        "concurrency_limit.context_managers.get_redis",
+        return_value=RedisMock(),
     )
 
     @concurrent(threads=10)
@@ -112,13 +120,17 @@ def test_limit_exceeded_limit_exceeded_timeout(mocker: pytest_mock.MockerFixture
 
 def test_limit_within_limit_expire(mocker: pytest_mock.MockerFixture):
     mocker.patch(
-        "concurrency_limit.context_managers.get_redis", return_value=RedisMock()
+        "concurrency_limit.context_managers.get_redis",
+        return_value=RedisMock(),
     )
 
     with concurrency_limit.limit(
         concurrency_limit.RedisConfiguration(),
         concurrency_limit.LimitConfiguration(
-            key="key-1", limit=1, limit_expire=5, limit_timeout=0
+            key="key-1",
+            limit=1,
+            limit_expire=5,
+            limit_timeout=0,
         ),
     ):
         time.sleep(1)
@@ -127,7 +139,10 @@ def test_limit_within_limit_expire(mocker: pytest_mock.MockerFixture):
             with concurrency_limit.limit(
                 concurrency_limit.RedisConfiguration(),
                 concurrency_limit.LimitConfiguration(
-                    key="key-1", limit=1, limit_expire=5, limit_timeout=0
+                    key="key-1",
+                    limit=1,
+                    limit_expire=5,
+                    limit_timeout=0,
                 ),
             ):
                 time.sleep(1)
@@ -135,13 +150,17 @@ def test_limit_within_limit_expire(mocker: pytest_mock.MockerFixture):
 
 def test_limit_exceeded_limit_expire(mocker: pytest_mock.MockerFixture):
     mocker.patch(
-        "concurrency_limit.context_managers.get_redis", return_value=RedisMock()
+        "concurrency_limit.context_managers.get_redis",
+        return_value=RedisMock(),
     )
 
     with concurrency_limit.limit(
         concurrency_limit.RedisConfiguration(),
         concurrency_limit.LimitConfiguration(
-            key="key-1", limit=1, limit_expire=5, limit_timeout=0
+            key="key-1",
+            limit=1,
+            limit_expire=5,
+            limit_timeout=0,
         ),
     ):
         time.sleep(10)
@@ -149,7 +168,10 @@ def test_limit_exceeded_limit_expire(mocker: pytest_mock.MockerFixture):
         with concurrency_limit.limit(
             concurrency_limit.RedisConfiguration(),
             concurrency_limit.LimitConfiguration(
-                key="key-1", limit=1, limit_expire=5, limit_timeout=0
+                key="key-1",
+                limit=1,
+                limit_expire=5,
+                limit_timeout=0,
             ),
         ):
             time.sleep(1)
@@ -157,7 +179,8 @@ def test_limit_exceeded_limit_expire(mocker: pytest_mock.MockerFixture):
 
 def test_limit_with_high_load(mocker: pytest_mock.MockerFixture):
     mocker.patch(
-        "concurrency_limit.context_managers.get_redis", return_value=RedisMock()
+        "concurrency_limit.context_managers.get_redis",
+        return_value=RedisMock(),
     )
 
     counter = 0
@@ -167,7 +190,9 @@ def test_limit_with_high_load(mocker: pytest_mock.MockerFixture):
         with concurrency_limit.limit(
             concurrency_limit.RedisConfiguration(),
             concurrency_limit.LimitConfiguration(
-                key="key-1", limit=500, limit_timeout=1
+                key="key-1",
+                limit=500,
+                limit_timeout=1,
             ),
         ) as slot_id:
             nonlocal counter
@@ -217,7 +242,8 @@ def test_limit_clean(mocker: pytest_mock.MockerFixture):
     assert client.hlen("key-1") == 2
 
     for scan_key in concurrency_limit.limit_iter(
-        concurrency_limit.RedisConfiguration(), "key-*"
+        concurrency_limit.RedisConfiguration(),
+        "key-*",
     ):
         for scan_lock_id, _ in client.hscan_iter(scan_key):
             assert scan_lock_id.startswith("unexpired-")
@@ -243,7 +269,8 @@ def test_limit_clean_expire_wrong_type(mocker: pytest_mock.MockerFixture):
     assert client.hlen("key-1") == 2
 
     for scan_key in concurrency_limit.limit_iter(
-        concurrency_limit.RedisConfiguration(), "key-*"
+        concurrency_limit.RedisConfiguration(),
+        "key-*",
     ):
         for scan_lock_id, _ in client.hscan_iter(scan_key):
             assert scan_lock_id.startswith("valid-")
